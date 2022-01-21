@@ -42,7 +42,8 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
 
     'rest_framework',
-    'api'
+    'api',
+    'drf_yasg',
 
 ]
 
@@ -82,11 +83,11 @@ WSGI_APPLICATION = 'core.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql_psycopg2',
-        'NAME': 'rest_api',
-        'USER': 'postgres',
-        'PASSWORD': '41267744',
-        'HOST': '127.0.0.1',
-        'PORT': '5432',
+        'NAME': 'rest_api_new',
+        'USER': 'admin',
+        'PASSWORD': 'admin',
+        'HOST': 'db',
+        'PORT': 5432,
     }
 }
 
@@ -131,6 +132,16 @@ STATIC_URL = '/static/'
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
-
 API_KEY = os.getenv('API_KEY')
 SHARED_KEY = os.getenv('SHARED_KEY')
+
+REST_FRAMEWORK = {
+    'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.PageNumberPagination',
+    'PAGE_SIZE': 5,
+    'DEFAULT_AUTHENTICATION_CLASSES': [
+        'rest_framework.authentication.BasicAuthentication',
+        'rest_framework.authentication.SessionAuthentication',
+    ]
+}
+
+LOGIN_REDIRECT_URL = 'api_all'
