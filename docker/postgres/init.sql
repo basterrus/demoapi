@@ -3,3 +3,4 @@ CREATE USER admin WITH PASSWORD 'admin';
 CREATE DATABASE rest_api_new;
 GRANT ALL PRIVILEGES ON DATABASE rest_api_new TO admin;
 
+

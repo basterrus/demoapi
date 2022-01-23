@@ -1,15 +1,17 @@
-from django.contrib.auth import authenticate
 from django.contrib.auth.models import User
 from django.http import JsonResponse, Http404
-from rest_framework import status
+from rest_framework import status, filters
 from rest_framework.decorators import api_view
-from rest_framework.generics import CreateAPIView, ListAPIView, UpdateAPIView, DestroyAPIView
+from rest_framework.generics import CreateAPIView, ListAPIView, UpdateAPIView
 from rest_framework.pagination import PageNumberPagination
-from rest_framework.permissions import IsAuthenticated, AllowAny, IsAdminUser
+from rest_framework.permissions import IsAuthenticated, AllowAny
 from rest_framework.response import Response
 from rest_framework.views import APIView
-from api.serializers import UserRegisterSerializer, PlaylistSerializer, PartySerializer, TrackSerializer, UserSerializer
+from api.serializers import UserRegisterSerializer, PlaylistSerializer, PartySerializer, UserSerializer, \
+    TrackSearchSerializer, TrackSerializer
 from api.models import Playlist, Party, Track
+from api.services import search_track
+import django_filters.rest_framework
 
 
 @api_view(['GET'])
@@ -77,6 +79,7 @@ class PartyListView(ListAPIView):
 
 class PartyCreateView(CreateAPIView):
     """Создание Мероприятия"""
+
     queryset = Party.objects.all()
     serializer_class = PartySerializer
     permission_classes = [IsAuthenticated]
@@ -84,6 +87,7 @@ class PartyCreateView(CreateAPIView):
 
 class PlaylistView(ListAPIView):
     """Список доступных плейлистов"""
+
     queryset = Playlist.objects.all()
     serializer_class = PlaylistSerializer
     permission_classes = [IsAuthenticated]
@@ -91,6 +95,7 @@ class PlaylistView(ListAPIView):
 
 class PlaylistCreateView(CreateAPIView):
     """Создание плейлиста"""
+
     queryset = Playlist.objects.all()
     serializer_class = PlaylistSerializer
     permission_classes = [IsAuthenticated]
@@ -105,12 +110,12 @@ class PlaylistUpdateView(APIView):
         except Playlist.DoesNotExist:
             raise Http404
 
-    def get(self, request, pk, format=None):
+    def get(self, request, pk):
         snippet = self.get_object(pk)
         serializer = PlaylistSerializer(snippet)
         return Response(serializer.data)
 
-    def put(self, request, pk, format=None):
+    def put(self, request, pk):
         snippet = self.get_object(pk)
         serializer = PlaylistSerializer(snippet, data=request.data)
         if serializer.is_valid():
@@ -120,11 +125,12 @@ class PlaylistUpdateView(APIView):
 
 
 class PlaylistDetailView(APIView):
-    """Редактирование плейлиста"""
+    """Просмотр плейлиста"""
 
+    # TODO сделать
     def get_object(self, pk):
         try:
-            return Playlist.objects.filter(pk=pk)
+            return Playlist.objects.get(pk=pk)
         except Playlist.DoesNotExist:
             raise Http404
 
@@ -149,15 +155,75 @@ class PlaylistDeleteView(APIView):
         return Response(status=status.HTTP_204_NO_CONTENT)
 
 
+class PlaylistTrackView(APIView):
+    def get_object(self, pk):
+        try:
+            return Playlist.objects.get(pk=pk)
+        except Playlist.DoesNotExist:
+            raise Http404
+
+    def get(self, request, pk, format=None):
+        snippet = Track.objects.filter(pk=pk)
+        serializer = TrackSerializer(snippet, many=True)
+        return Response(serializer.data)
+
+    def put(self, request, pk, format=None):
+        playlist_name = self.get_object(pk=pk)
+        serializer = TrackSerializer(playlist_name, data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+    def delete(self, request, pk, format=None):
+        snippet = self.get_object(pk)
+        snippet.delete()
+        return Response(status=status.HTTP_204_NO_CONTENT)
+
+
 class SearchTrackView(APIView):
     """Поиск трека"""
-    queryset = Track.objects.all()
-    serializer_class = TrackSerializer
-    permission_classes = [IsAuthenticated]
+
+    def get(self, request, pk, format=None):
+        track_name = request.GET.get("track", "")
+        result = search_track(track_name)
+        serializer = TrackSearchSerializer(result, many=True)
+        return Response(serializer.data)
 
 
 class TrackAddView(CreateAPIView):
-    """Добавление трека"""
+    """Добавление трека, с привязкой к плейлисту"""
+
     queryset = Track.objects.all()
     serializer_class = TrackSerializer
     permission_classes = [IsAuthenticated]
+
+
+class TrackListView(ListAPIView):
+    """Просмотр всех треков"""
+
+    queryset = Track.objects.all()
+    serializer_class = TrackSerializer
+    permission_classes = [IsAuthenticated]
+
+
+class SearchAllTracksPlaylistView(APIView):
+    """Поиск трека по плейлисту"""
+
+    def get(self, request, pk, format=None):
+        party = Track.objects.filter(playlist_name=pk)
+        serializer = TrackSerializer(party, many=True)
+        return Response(serializer.data)
+
+
+class LikeTrack(APIView):
+    """Like track"""
+
+    def post(self, request, pk):
+        serializer = Track.objects.get(pk)
+        serializer.track_rate = 1
+        if serializer.is_valid():
+            serializer.save()
+            return Response(status=201)
+        else:
+            return Response(status=400)

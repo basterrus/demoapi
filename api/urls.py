@@ -1,7 +1,8 @@
 from django.urls import include, path, re_path
 from rest_framework.permissions import AllowAny
 from api.views import all_api_list, UserRegisterView, PlaylistCreateView, PartyCreateView, PartyListView, PlaylistView, \
-    UserListView, PlaylistDeleteView, PlaylistUpdateView, PlaylistDetailView
+    UserListView, PlaylistDeleteView, PlaylistUpdateView, PlaylistDetailView, SearchTrackView, TrackAddView, \
+    TrackListView, SearchAllTracksPlaylistView, LikeTrack
 from drf_yasg.views import get_schema_view
 from drf_yasg import openapi
 
@@ -17,6 +18,7 @@ schema_view = get_schema_view(
     public=True,
     permission_classes=(AllowAny,),
 )
+
 
 urlpatterns = [
     # Common
@@ -37,9 +39,10 @@ urlpatterns = [
     path('playlist/detail/<int:pk>/', PlaylistDetailView.as_view(), name='playlist_detail'),
     path('playlist/delete/<int:pk>/', PlaylistDeleteView.as_view(), name='playlist_delete'),
 
-    # Track
-    # path('track/detail/<int:pk>/', UserRegisterView.as_view(), name='track_detail'),
-    path('track/search/', UserRegisterView.as_view(), name='track_search'),
-    path('track/add/<int:pk>/', UserRegisterView.as_view(), name='track_add'),
 
+    path('playlist/<int:pk>/track/search/', SearchTrackView.as_view(), name='track_add'),
+    path('track/add/', TrackAddView.as_view(), name='track_add'),
+    path('track/list/', TrackListView.as_view(), name='track_add'),
+    path('track/list/<int:pk>/', SearchAllTracksPlaylistView.as_view(), name='track_add'),
+    path('track/<int:pk>/like/', LikeTrack.as_view(), name='track_add'),
 ]

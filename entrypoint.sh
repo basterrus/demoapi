@@ -6,8 +6,8 @@ python manage.py makemigrations --no-input
 
 python manage.py migrate --no-input
 
-#python manage.py runserver 127.0.0.1:8000
+python manage.py collectstatic --no-input
 
-ls-al ./
+python manage.py create_su
 
-exec ./core.wsgi:application -b 127.0.0.1:8000 --reload
+exec gunicorn core.wsgi:application -b 0.0.0.0:8000 --reload

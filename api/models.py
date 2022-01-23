@@ -26,7 +26,8 @@ class Playlist(models.Model):
 
 
 class Track(models.Model):
-    playlist_name = models.ForeignKey(Playlist, verbose_name='Название трека', on_delete=models.CASCADE)
+    playlist_name = models.ForeignKey(Playlist, verbose_name='Название плейлиста', on_delete=models.CASCADE)
     track_name = models.CharField(max_length=100, verbose_name='Название трека')
+    track_singer = models.CharField(max_length=50, verbose_name='Имя исполнителя', null=True, blank=True)
     track_url = models.URLField(verbose_name='Ссылка на трек')
-    track_rate = models.IntegerField(verbose_name='Рейтинг трека')
+    track_rate = models.IntegerField(verbose_name='Рейтинг трека', default=0)

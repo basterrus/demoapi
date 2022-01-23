@@ -44,7 +44,8 @@ class LoginUserSerializer(serializers.Serializer):
             user = authenticate(request=self.context.get('request'),
                                 username=username, password=password)
             if not user:
-                raise serializers.ValidationError('Невозможно войти с предоставленными учетными данными.', code='authorization')
+                raise serializers.ValidationError('Невозможно войти с предоставленными учетными данными.',
+                                                  code='authorization')
         else:
             raise serializers.ValidationError('Должен включать «имя пользователя» и «пароль».', code='authorization')
 
@@ -67,4 +68,11 @@ class PlaylistSerializer(serializers.ModelSerializer):
 class TrackSerializer(serializers.ModelSerializer):
     class Meta:
         model = Track
-        fields = '__all__'
+        fields = "__all__"
+
+
+class TrackSearchSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Track
+
+        fields = ('track_name', 'track_singer', 'track_url')
