@@ -19,9 +19,9 @@ ___
 2. Склонируйте репозиторий с помощью git: `https://github.com/basterrus/demoapi.git`         
    Перейдите (при необходимости) в папку demoapi: `cd demoapi`
    Предварительно нужно создать файл `.env` и заполнить его в соответствии с файлом шаблона `.env.sample`.   
-   Выполните команды:
-     `pip install -r requirements.txt`
-     `python manage.py makemigrations`               
+   Выполните команды:      
+     `pip install -r requirements.txt`     
+     `python manage.py makemigrations`                    
      `python manage.py migrate`           
      `python manage.py create_su`                        
      `python manage.py runserver`         
