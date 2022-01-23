@@ -40,9 +40,9 @@ urlpatterns = [
     path('playlist/delete/<int:pk>/', PlaylistDeleteView.as_view(), name='playlist_delete'),
 
 
-    path('playlist/<int:pk>/track/search/', SearchTrackView.as_view(), name='track_add'),
+    path('playlist/<int:pk>/track/search/', SearchTrackView.as_view(), name='track_search'),
     path('track/add/', TrackAddView.as_view(), name='track_add'),
-    path('track/list/', TrackListView.as_view(), name='track_add'),
-    path('track/list/<int:pk>/', SearchAllTracksPlaylistView.as_view(), name='track_add'),
+    path('track/list/', TrackListView.as_view(), name='track_list'),
+    path('track/list/<int:pk>/', SearchAllTracksPlaylistView.as_view(), name='track_all_search'),
     path('track/<int:pk>/like/', LikeTrack.as_view(), name='track_add'),
 ]

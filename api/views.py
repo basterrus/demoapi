@@ -34,8 +34,11 @@ def all_api_list(request):
         'PLAYLIST_DETAIL': 'playlist/detail/<int:pk>/',
         'PLAYLIST_DELETE': 'playlist/delete/<int:pk>/',
         '***': '******************',
-        'TRACK_SEARCH': 'track/search/',
-        'TRACK_ADD_PLAYLIST': 'track/add/<int:pk>/',
+        'TRACK_SEARCH': 'playlist/<int:pk>/track/search/',
+        'TRACK_ADD': 'track/add/',
+        'TRACK_LIST': 'track/list/',
+        'TRACK_ALL_LIST': 'track/list/<int:pk>/',
+        'TRACK_ADD_LIKE': 'track/<int:pk>/like/',
 
     }
     return JsonResponse(api_url, safe=False)
@@ -127,7 +130,6 @@ class PlaylistUpdateView(APIView):
 class PlaylistDetailView(APIView):
     """Просмотр плейлиста"""
 
-    # TODO сделать
     def get_object(self, pk):
         try:
             return Playlist.objects.get(pk=pk)
